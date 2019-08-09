@@ -33,9 +33,10 @@ class TextRNN(nn.Module):
 
     def forward(self, x):
         x = x.type(torch.float32)
-        if self.char_vocab_size:
-            x = self.embedding(x)
+        # if self.char_vocab_size:
+        #     x = self.embedding(x)
         out, _ = self.BiLSTM(x)
+        out = F.sigmoid(out)
         out = self.fc(out[:, -1, :])
         return out
 
@@ -51,7 +52,7 @@ class TextRCNN(nn.Module):
         self.embedding_dim = 300
 
         self.lstm = nn.LSTM(self.embedding_dim, self.hidden_size, self.num_layers,
-            bidirectional=self.bidirectional, batch_first=True, dropout=self.dropout)
+                            bidirectional=self.bidirectional, batch_first=True, dropout=self.dropout)
         self.maxpool = nn.MaxPool1d(30)
         self.fc = nn.Linear(2 * self.hidden_size + self.embedding_dim, self.num_classes)
 
@@ -217,13 +218,14 @@ if __name__ == "__main__":
     test_text = replace(test_text, word_model)
     # import ipdb; ipdb.set_trace()
 
-    # print(f"len\ntrain: text {len(train_text)} label {len(train_labels)}\n {len(dev_text)} {len(dev_labels)}\n {len(test_text)} {len(test_labels)}")
+    # print(f"len\ntrain: text {len(train_text)} label {len(train_labels)}\n {len(dev_text)} {len(dev_labels)}\n "
+    #       f"{len(test_text)} {len(test_labels)}")
     train_iter = DataLoader(TextDataset(train_text, train_labels, word_model),
-        batch_size=64, shuffle=True)
+                            batch_size=64, shuffle=True)
     dev_iter = DataLoader(TextDataset(dev_text, dev_labels, word_model),
-        batch_size=64, shuffle=True)
+                          batch_size=64, shuffle=True)
     test_iter = DataLoader(TextDataset(test_text, test_labels, word_model),
-        batch_size=64, shuffle=True)
+                           batch_size=64, shuffle=True)
 
-    model = TextCNN().to(device)
+    model = TextRNN().to(device)
     train(train_iter, dev_iter, test_iter, model, 20, 1e-3)

@@ -11,9 +11,9 @@ from string import digits, punctuation
 
 
 stopwords = set([line.strip() for line in open('./data/stop_words.txt', 'r',
-    encoding='utf-8').readlines()])
-rule = re.compile(r'[a-zA-Z.,;《》？！“”‘’@#￥%…&×（）——+【】{};；●，。&～、|\s:：=' + \
-    digits + punctuation + ']+')
+                                               encoding='utf-8').readlines()])
+rule = re.compile(r'[a-zA-Z.,;《》？！“”‘’@#￥%…&×（）——+【】{};；●，。&～、|\s:：=' +
+                  digits + punctuation + ']+')
 
 
 def word_tokenizer(sentence):
@@ -53,8 +53,7 @@ def word_w2v_model(text, word_min_freq):
         sen = word_tokenizer(sen)
         sen = [word for word in sen if word not in stopwords]
         contents.append(sen)
-    model = Word2Vec(contents, size=300, workers=4,
-        window=10, min_count=word_min_freq)
+    model = Word2Vec(contents, size=300, workers=4, window=10, min_count=word_min_freq)
     print('word vocab size: ', len(model.wv.vocab))
     return model, contents
 
@@ -67,8 +66,7 @@ def char_w2v_model(text, char_min_freq):
         sen = char_tokenizer(sen)
         sen = [char for char in sen if char not in stopwords]
         contents.append(sen)
-    model = Word2Vec(contents, size=300, workers=4,
-        window=10, min_count=char_min_freq)
+    model = Word2Vec(contents, size=300, workers=4, window=10, min_count=char_min_freq)
     print('char vocab size: ', len(model.wv.vocab))
     return model, contents
 
